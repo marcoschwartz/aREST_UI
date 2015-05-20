@@ -96,9 +96,9 @@ virtual void root_answer() {
     //   addToBuffer("</div>");
     // }
     
-    addToBuffer("<div class=\"row\">");
-    addToBuffer("<div class='col-md-4 indicator' id='temperature'></div>");
-    addToBuffer("</div>");
+    // addToBuffer("<div class=\"row\">");
+    // addToBuffer("<div class='col-md-4 indicator' id='temperature'></div>");
+    // addToBuffer("</div>");
 
     addToBuffer("</div>");
 
@@ -130,7 +130,7 @@ virtual void root_answer() {
     // }
 
     // addToBuffer("$.get('/temperature', function(data) { $('#temperature').html('Temperature: ' + data.temperature); });");
-    // addToBuffer("});</script>");
+    addToBuffer("});</script>");
 
     addToBuffer("</body></html>\r\n");
 
