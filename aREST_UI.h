@@ -28,6 +28,11 @@ aREST_UI() {
 
 }
 
+// Get title
+void title(String the_title) {
+  ui_title = the_title;
+}
+
 // Create button
 void button(int pin){
 
@@ -68,12 +73,21 @@ virtual void root_answer() {
     addToBuffer("<script ");
     addToBuffer("src=\"http://code.jquery.com/jquery-2.1.3.min.js\">");
     addToBuffer("</script>");
-    addToBuffer("<script type='text/javascript' src='http://cdn.rawgit.com/Foliotek/AjaxQ/master/ajaxq.js'></script>");
+    //addToBuffer("<script type='text/javascript' src='http://cdn.rawgit.com/Foliotek/AjaxQ/master/ajaxq.js'></script>");
     addToBuffer("<style>.row {margin-top: 30px;} .indicator {font-size: 30px; vertical-align: middle;}</style>");
     addToBuffer("<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">");
     addToBuffer("</head><body>");
     addToBuffer("<div class=\"container\">");
-    addToBuffer("<h1>Relay Control</h1>");
+
+    // Title
+    if (ui_title.length() != 0) {
+      addToBuffer("<h1>");
+      addToBuffer(ui_title);
+      addToBuffer("</h1>");
+    }
+    else {
+      addToBuffer("<h1>Interface</h1>");
+    }
 
     // Buttons UI
     for (int i = 0; i < buttons_index; i++) {
@@ -137,6 +151,9 @@ virtual void root_answer() {
 }
 
 private:
+
+  // UI title
+  String ui_title;
 
   // Buttons array
   int buttons[10];
