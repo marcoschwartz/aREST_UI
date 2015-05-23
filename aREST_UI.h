@@ -45,23 +45,24 @@ void button(int pin){
 
 }
 
-// void slider(int pin) {
+void slider(int pin) {
 
-//   // Set pin as output
-//   pinMode(pin,OUTPUT);
+  // Set pin as output
+  pinMode(pin,OUTPUT);
 
-//   // Set in button array
-//   sliders[sliders_index] = pin;
-//   sliders_index++;
+  // Set in button array
+  sliders[sliders_index] = pin;
+  sliders_index++;
 
-// }
+}
 
-// Create indicator
-// void indicator(char * variable){
+// Create label
+void label(char * label_name){
 
-//   indicators[0] = variable;
+  int_labels_names[int_labels_index] = label_name;
+  int_labels_index++;
 
-// }
+}
 
 // Handle connection
 virtual void root_answer() {
@@ -73,7 +74,7 @@ virtual void root_answer() {
     addToBuffer("<script ");
     addToBuffer("src=\"http://code.jquery.com/jquery-2.1.3.min.js\">");
     addToBuffer("</script>");
-    //addToBuffer("<script type='text/javascript' src='http://cdn.rawgit.com/Foliotek/AjaxQ/master/ajaxq.js'></script>");
+    addToBuffer("<script type='text/javascript' src='http://cdn.rawgit.com/Foliotek/AjaxQ/master/ajaxq.js'></script>");
     addToBuffer("<style>.row {margin-top: 30px;} .indicator {font-size: 30px; vertical-align: middle;}</style>");
     addToBuffer("<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">");
     addToBuffer("</head><body>");
@@ -102,17 +103,25 @@ virtual void root_answer() {
     }
 
     // // Sliders UI
-    // for (int i = 0; i < sliders_index; i++) {
-    //   addToBuffer("<div class=\"row\">");
-    //   addToBuffer("<div class=\"col-md-2\"><input type='range' value='0' max='255' min='0' step='5' id='slider");
-    //   addToBuffer(sliders[i]);
-    //   addToBuffer("'></div>");
-    //   addToBuffer("</div>");
-    // }
+    for (int i = 0; i < sliders_index; i++) {
+      addToBuffer("<div class=\"row\">");
+      addToBuffer("<div class=\"col-md-2\"><input type='range' value='0' max='255' min='0' step='5' id='slider");
+      addToBuffer(sliders[i]);
+      addToBuffer("'></div>");
+      addToBuffer("</div>");
+    }
     
-    // addToBuffer("<div class=\"row\">");
-    // addToBuffer("<div class='col-md-4 indicator' id='temperature'></div>");
-    // addToBuffer("</div>");
+    // Labels UI
+    for (int j = 0; j < int_labels_index; j++) {
+      addToBuffer("<div class=\"row\">");
+      addToBuffer("<div class='col-md-3 indicator'>");
+      addToBuffer(int_labels_names[j]);
+      addToBuffer(": </div>");
+      addToBuffer("<div class='col-md-3 indicator' id='");
+      addToBuffer(int_labels_names[j]);
+      addToBuffer("'></div>");
+      addToBuffer("</div>");
+    }
 
     addToBuffer("</div>");
 
@@ -122,28 +131,38 @@ virtual void root_answer() {
     for (int i = 0; i < buttons_index; i++) {
       addToBuffer("$('#btn_on");
       addToBuffer(buttons[i]);
-      addToBuffer("').click(function() {$.get('/digital/");
+      addToBuffer("').click(function() {$.getq('queue','/digital/");
       addToBuffer(buttons[i]);
       addToBuffer("/1');});");
       addToBuffer("$('#btn_off");
       addToBuffer(buttons[i]);
-      addToBuffer("').click(function() {$.get('/digital/");
+      addToBuffer("').click(function() {$.getq('queue','/digital/");
       addToBuffer(buttons[i]);
       addToBuffer("/0');});");    
     }
 
     // Sliders JavaScript
-    // for (int i = 0; i < sliders_index; i++) {
-    //   addToBuffer("$('#slider");
-    //   addToBuffer(sliders[i]);
-    //   addToBuffer("').mouseup(function() {var val = $('#slider");
-    //   addToBuffer(sliders[i]);
-    //   addToBuffer("').val(); $.get('/analog/");
-    //   addToBuffer(sliders[i]);
-    //   addToBuffer("/' + val); });");      
-    // }
+    for (int i = 0; i < sliders_index; i++) {
+      addToBuffer("$('#slider");
+      addToBuffer(sliders[i]);
+      addToBuffer("').mouseup(function() {var val = $('#slider");
+      addToBuffer(sliders[i]);
+      addToBuffer("').val(); $.getq('queue','/analog/");
+      addToBuffer(sliders[i]);
+      addToBuffer("/' + val); });");      
+    }
 
-    // addToBuffer("$.get('/temperature', function(data) { $('#temperature').html('Temperature: ' + data.temperature); });");
+    // Labels JavaScript
+    for (int j = 0; j < int_labels_index; j++) {
+      addToBuffer("$.getq('queue','/");
+      addToBuffer(int_labels_names[j]);
+      addToBuffer("', function(data) { $('#");
+      addToBuffer(int_labels_names[j]);
+      addToBuffer("').html(data.");
+      addToBuffer(int_labels_names[j]);
+      addToBuffer("); });"); 
+    }
+
     addToBuffer("});</script>");
 
     addToBuffer("</body></html>\r\n");
@@ -164,7 +183,9 @@ private:
   int sliders_index;
   
   // Indicators array
-  char * indicators[10];
+  uint8_t int_labels_index;
+  int * int_labels_variables[10];
+  char * int_labels_names[10];
 
 };
 

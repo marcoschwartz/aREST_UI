@@ -51,3 +51,33 @@ To install the library, simply clone this repository in the /libraries folder of
 3. Upload the sketch to the board
 4. Go to a web browser and type `http://wildfire.local`
 5. Click on the 'On' button and the LED should turn on
+
+## API documentation
+
+### Create aREST UI instance
+
+You can simply create an instance of aREST UI with the following command:
+
+`aREST_UI ui = aREST_UI();`
+
+### Button
+
+Buttons are used to control the state of a digital output pin. The command creates two button inside the interface, one 'On' button, and one 'Off' button. For example, the following command creates a pair of buttons to control pin number 6:
+
+`ui.button(6)`
+
+### Slider
+
+The slider command creates a slider to control a pin via PWM. For example, it can be used to control the intensity of a LED connected to this pin. The following command creates a pair of buttons to control pin number 6:
+
+`ui.slider(6)`;
+
+### Label
+
+Labels are used to display the value of variables inside the interface. Before you can use this command, you need to create the corresponding variable first. The following command declares a variable called temperature:
+
+`ui.variable("temperature",&temperature);`
+
+After that, you can use the following command to create the corresponding label inside the interface:
+
+`ui.label("temperature")`;
