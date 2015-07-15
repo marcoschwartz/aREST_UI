@@ -17,7 +17,7 @@ It also works with the ESP8266 WiFi chip.
 
 To use the library with Arduino boards you will need the latest version of the Arduino IDE:
 
-- [Arduino IDE 1.6.4](http://arduino.cc/en/main/software)
+- [Arduino IDE 1.6.5](http://arduino.cc/en/main/software)
 
 You will also need the aREST library:
 
