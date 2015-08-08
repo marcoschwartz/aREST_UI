@@ -3,10 +3,10 @@
   See the README file for more details.
  
   Written in 2015 by Marco Schwartz under a GPL license. 
-  Version 1.0.0
+  Version 1.0.1
   Changelog:
   
-  Version 1.0.0: Initial release with buttons only
+  Version 1.0.1: Initial release with buttons only
 */
 
 #ifndef aRest_ui_h
