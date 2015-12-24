@@ -77,7 +77,7 @@ public:
     addToBuffer("<html><head>");
     addToBuffer("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
     addToBuffer("<title>");
-    addToBuffer(ui_title)
+    addToBuffer(ui_title);
     addToBuffer("</title>");
     addToBuffer("<script ");
     addToBuffer("src=\"http://code.jquery.com/jquery-2.1.3.min.js\">");
