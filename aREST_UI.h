@@ -1,12 +1,12 @@
-/* 
-  aREST UI for Arduino & the ESP8266
-  See the README file for more details.
- 
-  Written in 2015 by Marco Schwartz under a GPL license. 
-  Version 1.0.1
-  Changelog:
-  
-  Version 1.0.1: Initial release with buttons only
+/*
+aREST UI for Arduino & the ESP8266
+See the README file for more details.
+
+Written in 2015 by Marco Schwartz under a GPL license.
+Version 1.0.1
+Changelog:
+
+Version 1.0.1: Initial release with buttons only
 */
 
 #ifndef aRest_ui_h
@@ -24,53 +24,61 @@ class aREST_UI: public aREST {
 
 public:
 
-aREST_UI() {
+  aREST_UI() {
 
-}
+  }
 
-// Get title
-void title(String the_title) {
-  ui_title = the_title;
-}
+  // Set title
+  void set_title(String title) {
+    if (ui_title.length() != 0) {
+      ui_title = title;
+    }
+    else {
+      ui_title = "Interface";
+    }
+  }
 
-// Create button
-void button(int pin){
+  // Create button
+  void button(int pin){
 
-  // Set pin as output
-  pinMode(pin,OUTPUT);
+    // Set pin as output
+    pinMode(pin,OUTPUT);
 
-  // Set in button array
-  buttons[buttons_index] = pin;
-  buttons_index++;
+    // Set in button array
+    buttons[buttons_index] = pin;
+    buttons_index++;
 
-}
+  }
 
-void slider(int pin) {
+  void slider(int pin) {
 
-  // Set pin as output
-  pinMode(pin,OUTPUT);
+    // Set pin as output
+    pinMode(pin,OUTPUT);
 
-  // Set in button array
-  sliders[sliders_index] = pin;
-  sliders_index++;
+    // Set in button array
+    sliders[sliders_index] = pin;
+    sliders_index++;
 
-}
+  }
 
-// Create label
-void label(char * label_name){
+  // Create label
+  void label(char * label_name){
 
-  int_labels_names[int_labels_index] = label_name;
-  int_labels_index++;
+    int_labels_names[int_labels_index] = label_name;
+    int_labels_index++;
 
-}
+  }
 
-// Handle connection
-virtual void root_answer() {
-        
+  // Handle connection
+  virtual void root_answer() {
+
     // Answer
     addToBuffer("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n");
     addToBuffer("<html><head>");
     addToBuffer("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
+    addToBuffer("<title>");
+    addToBuffer(ui_title)
+    addToBuffer("</title>");
     addToBuffer("<script ");
     addToBuffer("src=\"http://code.jquery.com/jquery-2.1.3.min.js\">");
     addToBuffer("</script>");
@@ -81,14 +89,9 @@ virtual void root_answer() {
     addToBuffer("<div class=\"container\">");
 
     // Title
-    if (ui_title.length() != 0) {
-      addToBuffer("<h1>");
-      addToBuffer(ui_title);
-      addToBuffer("</h1>");
-    }
-    else {
-      addToBuffer("<h1>Interface</h1>");
-    }
+    addToBuffer("<h1>");
+    addToBuffer(ui_title);
+    addToBuffer("</h1>");
 
     // Buttons UI
     for (int i = 0; i < buttons_index; i++) {
@@ -114,7 +117,7 @@ virtual void root_answer() {
       addToBuffer("'></div>");
       addToBuffer("</div>");
     }
-    
+
     // Labels UI
     for (int j = 0; j < int_labels_index; j++) {
       addToBuffer("<div class=\"row\">");
@@ -142,7 +145,7 @@ virtual void root_answer() {
       addToBuffer(buttons[i]);
       addToBuffer("').click(function() {$.getq('queue','/digital/");
       addToBuffer(buttons[i]);
-      addToBuffer("/0');});");    
+      addToBuffer("/0');});");
     }
 
     // Sliders JavaScript
@@ -153,7 +156,7 @@ virtual void root_answer() {
       addToBuffer(sliders[i]);
       addToBuffer("').val(); $.getq('queue','/analog/");
       addToBuffer(sliders[i]);
-      addToBuffer("/' + val); });");      
+      addToBuffer("/' + val); });");
     }
 
     // Labels JavaScript
@@ -164,14 +167,14 @@ virtual void root_answer() {
       addToBuffer(int_labels_names[j]);
       addToBuffer("').html(data.");
       addToBuffer(int_labels_names[j]);
-      addToBuffer("); });"); 
+      addToBuffer("); });");
     }
 
     addToBuffer("});</script>");
 
     addToBuffer("</body></html>\r\n");
 
-}
+  }
 
 private:
 
@@ -185,7 +188,7 @@ private:
   // Buttons array
   int sliders[10];
   int sliders_index;
-  
+
   // Indicators array
   uint8_t int_labels_index;
   int * int_labels_variables[10];
