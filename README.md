@@ -8,6 +8,8 @@ aREST UI is an embedded UI for the aREST framework. Currently works with the Ard
 
 It also works with the ESP8266 WiFi chip.
 
+If you want to know more about aREST, go over to [http://arest.io/](http://arest.io/).
+
 ## Contents
 
 - aREST_UI.h: the library file.
