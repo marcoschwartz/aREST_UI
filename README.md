@@ -62,6 +62,12 @@ You can simply create an instance of aREST UI with the following command:
 
 `aREST_UI ui = aREST_UI();`
 
+### Title
+
+If you don't want to run with the default title, set your own for the UI.
+
+`ui.title("Your title");`
+
 ### Button
 
 Buttons are used to control the state of a digital output pin. The command creates two button inside the interface, one 'On' button, and one 'Off' button. For example, the following command creates a pair of buttons to control pin number 6:
