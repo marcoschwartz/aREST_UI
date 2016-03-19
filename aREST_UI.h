@@ -29,7 +29,7 @@ aREST_UI() {
 }
 
 typedef struct {
-  String function;
+  String function_name;
   String description;
 } function_button_t;
 
@@ -51,12 +51,14 @@ void button(int pin){
 }
 
 // Create function button
-void function_button(String function, String description){
+void function_button(char *function_name, char *description, int (*f)(String)){
+
+  // Setup function
+  aREST::function(function_name, f);
 
   // Set in function button array
-  //function_buttons[function_buttons_index] = (function_button_t*)malloc(sizeof(function_button_t));
-  function_buttons[function_buttons_index].function = function;
-  function_buttons[function_buttons_index].description = description;
+  function_buttons[function_buttons_index].function_name = String(function_name);
+  function_buttons[function_buttons_index].description = String(description);
   function_buttons_index++;
 
 }
@@ -177,7 +179,7 @@ virtual void root_answer() {
       addToBuffer("$('#func_btn");
       addToBuffer(i);
       addToBuffer("').click(function() {$.getq('queue','/");
-      addToBuffer(function_buttons[i].function);
+      addToBuffer(function_buttons[i].function_name);
       addToBuffer("');});");
     }
 
