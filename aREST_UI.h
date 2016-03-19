@@ -28,6 +28,11 @@ aREST_UI() {
 
 }
 
+typedef struct {
+  String function;
+  String description;
+} function_button_t;
+
 // Get title
 void title(String the_title) {
   ui_title = the_title;
@@ -42,6 +47,17 @@ void button(int pin){
   // Set in button array
   buttons[buttons_index] = pin;
   buttons_index++;
+
+}
+
+// Create function button
+void function_button(String function, String description){
+
+  // Set in function button array
+  //function_buttons[function_buttons_index] = (function_button_t*)malloc(sizeof(function_button_t));
+  function_buttons[function_buttons_index].function = function;
+  function_buttons[function_buttons_index].description = description;
+  function_buttons_index++;
 
 }
 
@@ -102,6 +118,17 @@ virtual void root_answer() {
       addToBuffer("</div>");
     }
 
+    // Function Buttons UI
+    for (int i = 0; i < function_buttons_index; i++) {
+      addToBuffer("<div class=\"row\">");
+      addToBuffer("<div class=\"col-md-2\"><button class=\"btn btn-block btn-lg btn-primary\" id='func_btn");
+      addToBuffer(i);
+      addToBuffer("'>");
+      addToBuffer(function_buttons[i].description);
+      addToBuffer("</button></div>");
+      addToBuffer("</div>");
+    }
+
     // // Sliders UI
     for (int i = 0; i < sliders_index; i++) {
       addToBuffer("<div class=\"row\">");
@@ -145,6 +172,15 @@ virtual void root_answer() {
       addToBuffer("/0');});");    
     }
 
+    // Function Buttons JavaScript
+    for (int i = 0; i < function_buttons_index; i++) {
+      addToBuffer("$('#func_btn");
+      addToBuffer(i);
+      addToBuffer("').click(function() {$.getq('queue','/");
+      addToBuffer(function_buttons[i].function);
+      addToBuffer("');});");
+    }
+
     // Sliders JavaScript
     for (int i = 0; i < sliders_index; i++) {
       addToBuffer("$('#slider");
@@ -181,6 +217,10 @@ private:
   // Buttons array
   int buttons[10];
   int buttons_index;
+
+  // Function Buttons array
+  function_button_t function_buttons[10];
+  int function_buttons_index;
 
   // Buttons array
   int sliders[10];
