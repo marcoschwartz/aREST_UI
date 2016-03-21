@@ -63,6 +63,19 @@ void function_button(char *function_name, char *description, int (*f)(String)){
 
 }
 
+// Create function button
+void function_with_input_button(char *function_name, char *description, int (*f)(String)){
+
+  // Setup function
+  aREST::function(function_name, f);
+
+  // Set in function with input button array
+  func_with_input_buttons[func_with_input_buttons_index].function_name = String(function_name);
+  func_with_input_buttons[func_with_input_buttons_index].description = String(description);
+  func_with_input_buttons_index++;
+
+}
+
 void slider(int pin) {
 
   // Set pin as output
@@ -131,6 +144,20 @@ virtual void root_answer() {
       addToBuffer("</div>");
     }
 
+    // Function With Input Buttons UI
+    for (int i = 0; i < func_with_input_buttons_index; i++) {
+      addToBuffer("<div class=\"row\">");
+      addToBuffer("<div class=\"col-md-2\"><input type='text' id='func_with_input_text");
+      addToBuffer(i);
+      addToBuffer("'/></div>");
+      addToBuffer("<div class=\"col-md-2\"><button class=\"btn btn-block btn-lg btn-primary\" id='func_with_input_btn");
+      addToBuffer(i);
+      addToBuffer("'>");
+      addToBuffer(func_with_input_buttons[i].description);
+      addToBuffer("</button></div>");
+      addToBuffer("</div>");
+    }
+
     // // Sliders UI
     for (int i = 0; i < sliders_index; i++) {
       addToBuffer("<div class=\"row\">");
@@ -183,6 +210,17 @@ virtual void root_answer() {
       addToBuffer("');});");
     }
 
+    // Function With Input Buttons JavaScript
+    for (int i = 0; i < func_with_input_buttons_index; i++) {
+      addToBuffer("$('#func_with_input_btn");
+      addToBuffer(i);
+      addToBuffer("').click(function() {var text = document.getElementById(\"func_with_input_text");
+      addToBuffer(i);
+      addToBuffer("\").value; $.getq('queue','/");
+      addToBuffer(func_with_input_buttons[i].function_name);
+      addToBuffer("?params=' + text); });");
+    }
+
     // Sliders JavaScript
     for (int i = 0; i < sliders_index; i++) {
       addToBuffer("$('#slider");
@@ -223,6 +261,10 @@ private:
   // Function Buttons array
   function_button_t function_buttons[10];
   int function_buttons_index;
+
+  // Function With Input Buttons array
+  function_button_t func_with_input_buttons[10];
+  int func_with_input_buttons_index;
 
   // Buttons array
   int sliders[10];
