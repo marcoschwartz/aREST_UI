@@ -87,11 +87,47 @@ void slider(int pin) {
 
 }
 
-// Create label
-void label(char * label_name){
+void variable_label(char *variable_name, char *label_text, int *var){
 
-  int_labels_names[int_labels_index] = label_name;
-  int_labels_index++;
+  // Initialize var
+  aREST::variable(variable_name, var);
+  variable_label_add(variable_name, label_text);
+}
+
+// Float variables (Mega & ESP only, or without CC3000)
+#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(ESP8266) || defined(CORE_WILDFIRE) || !defined(ADAFRUIT_CC3000_H)
+void variable_label(char *variable_name, char *label_text, float *var){
+
+  // Initialize variable
+  aREST::variable(variable_name, var);
+  variable_label_add(variable_name, label_text);
+}
+#endif
+
+// String variables (Mega & ESP only, or without CC3000)
+#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(ESP8266) || defined(CORE_WILDFIRE) || !defined(ADAFRUIT_CC3000_H)
+void variable_label(char *variable_name, char *label_text, String *var){
+
+  // Initialize var
+  aREST::variable(variable_name, var);
+  variable_label_add(variable_name, label_text);
+}
+#endif
+
+// Create variable label
+void variable_label_add(char *variable_name, char *label_text){
+
+  var_labels_names[var_labels_index] = variable_name;
+  var_labels_text[var_labels_index] = label_text;
+  var_labels_index++;
+
+}
+
+// Create label
+void label(char *label_text){
+
+  labels_text[labels_index] = label_text;
+  labels_index++;
 
 }
 
@@ -171,15 +207,24 @@ virtual void root_answer() {
       addToBuffer("</div>");
     }
     
-    // Labels UI
-    for (int j = 0; j < int_labels_index; j++) {
+    // Variable Labels UI
+    for (int j = 0; j < var_labels_index; j++) {
       addToBuffer("<div class=\"row\">");
-      addToBuffer("<div class='col-md-3 indicator'>");
-      addToBuffer(int_labels_names[j]);
+      addToBuffer("<div class='col-md-4 indicator'>");
+      addToBuffer(var_labels_text[j]);
       addToBuffer(": </div>");
-      addToBuffer("<div class='col-md-3 indicator' id='");
-      addToBuffer(int_labels_names[j]);
+      addToBuffer("<div class='col-md-4 indicator' id='");
+      addToBuffer(var_labels_names[j]);
       addToBuffer("'></div>");
+      addToBuffer("</div>");
+    }
+
+    // Labels UI
+    for (int j = 0; j < labels_index; j++) {
+      addToBuffer("<div class=\"row\">");
+      addToBuffer("<div class='col-md-10 indicator'>");
+      addToBuffer(labels_text[j]);
+      addToBuffer("</div>");
       addToBuffer("</div>");
     }
 
@@ -232,14 +277,14 @@ virtual void root_answer() {
       addToBuffer("/' + val); });");      
     }
 
-    // Labels JavaScript
-    for (int j = 0; j < int_labels_index; j++) {
+    // Variable Labels JavaScript
+    for (int j = 0; j < var_labels_index; j++) {
       addToBuffer("$.getq('queue','/");
-      addToBuffer(int_labels_names[j]);
+      addToBuffer(var_labels_names[j]);
       addToBuffer("', function(data) { $('#");
-      addToBuffer(int_labels_names[j]);
+      addToBuffer(var_labels_names[j]);
       addToBuffer("').html(data.");
-      addToBuffer(int_labels_names[j]);
+      addToBuffer(var_labels_names[j]);
       addToBuffer("); });"); 
     }
 
@@ -270,10 +315,14 @@ private:
   int sliders[10];
   int sliders_index;
   
-  // Indicators array
-  uint8_t int_labels_index;
-  int * int_labels_variables[10];
-  char * int_labels_names[10];
+  // Variable Labels array
+  uint8_t var_labels_index;
+  char * var_labels_names[10];
+  char * var_labels_text[10];
+  
+  // Labels array
+  uint8_t labels_index;
+  char * labels_text[10];
 
 };
 
