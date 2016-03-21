@@ -33,6 +33,16 @@ typedef struct {
   String description;
 } function_button_t;
 
+typedef enum {
+  TYPE_BUTTON=0,
+  TYPE_FUNCTION_BUTTON,
+  TYPE_FUNCTION_WITH_INPUT_BUTTON,
+  TYPE_SLIDER,
+  TYPE_VARIABLE_LABEL,
+  TYPE_LABEL
+} ui_type_t;
+
+
 // Get title
 void title(String the_title) {
   ui_title = the_title;
@@ -48,6 +58,9 @@ void button(int pin){
   buttons[buttons_index] = pin;
   buttons_index++;
 
+  // Set in the ui_order_list
+  ui_order_list[ui_order_index] = TYPE_BUTTON;
+  ui_order_index++;
 }
 
 // Create function button
@@ -61,6 +74,9 @@ void function_button(char *function_name, char *description, int (*f)(String)){
   function_buttons[function_buttons_index].description = String(description);
   function_buttons_index++;
 
+  // Set in the ui_order_list
+  ui_order_list[ui_order_index] = TYPE_FUNCTION_BUTTON;
+  ui_order_index++;
 }
 
 // Create function button
@@ -74,6 +90,9 @@ void function_with_input_button(char *function_name, char *description, int (*f)
   func_with_input_buttons[func_with_input_buttons_index].description = String(description);
   func_with_input_buttons_index++;
 
+  // Set in the ui_order_list
+  ui_order_list[ui_order_index] = TYPE_FUNCTION_WITH_INPUT_BUTTON;
+  ui_order_index++;
 }
 
 void slider(int pin) {
@@ -85,6 +104,9 @@ void slider(int pin) {
   sliders[sliders_index] = pin;
   sliders_index++;
 
+  // Set in the ui_order_list
+  ui_order_list[ui_order_index] = TYPE_SLIDER;
+  ui_order_index++;
 }
 
 void variable_label(char *variable_name, char *label_text, int *var){
@@ -121,6 +143,9 @@ void variable_label_add(char *variable_name, char *label_text){
   var_labels_text[var_labels_index] = label_text;
   var_labels_index++;
 
+  // Set in the ui_order_list
+  ui_order_list[ui_order_index] = TYPE_VARIABLE_LABEL;
+  ui_order_index++;
 }
 
 // Create label
@@ -129,6 +154,89 @@ void label(char *label_text){
   labels_text[labels_index] = label_text;
   labels_index++;
 
+  // Set in the ui_order_list
+  ui_order_list[ui_order_index] = TYPE_LABEL;
+  ui_order_index++;
+}
+
+void add_next_button() {
+  addToBuffer("<div class=\"row\">");
+  addToBuffer("<div class=\"col-md-2\"><button class=\"btn btn-block btn-lg btn-primary\" id='btn_on");
+  addToBuffer(buttons[current_buttons_index]);
+  addToBuffer("'>On</button></div>");
+  addToBuffer("<div class=\"col-md-2\"><button class=\"btn btn-block btn-lg btn-danger\" id='btn_off");
+  addToBuffer(buttons[current_buttons_index]);
+  addToBuffer("'>Off</button></div>");
+  addToBuffer("</div>");
+  current_buttons_index++;
+}
+
+void add_next_function_button() {
+  addToBuffer("<div class=\"row\">");
+  addToBuffer("<div class=\"col-md-2\"><button class=\"btn btn-block btn-lg btn-primary\" id='func_btn");
+  addToBuffer(current_function_buttons_index);
+  addToBuffer("'>");
+  addToBuffer(function_buttons[current_function_buttons_index].description);
+  addToBuffer("</button></div>");
+  addToBuffer("</div>");
+  current_function_buttons_index++;
+}
+
+void add_next_function_with_input_button() {
+  addToBuffer("<div class=\"row\">");
+  addToBuffer("<div class=\"col-md-2\"><input type='text' id='func_with_input_text");
+  addToBuffer(current_func_with_input_buttons_index);
+  addToBuffer("'/></div>");
+  addToBuffer("<div class=\"col-md-2\"><button class=\"btn btn-block btn-lg btn-primary\" id='func_with_input_btn");
+  addToBuffer(current_func_with_input_buttons_index);
+  addToBuffer("'>");
+  addToBuffer(func_with_input_buttons[current_func_with_input_buttons_index].description);
+  addToBuffer("</button></div>");
+  addToBuffer("</div>");
+  current_func_with_input_buttons_index++;
+}
+
+void add_next_slider() {
+  addToBuffer("<div class=\"row\">");
+#if defined(ESP8266)
+  addToBuffer("<div class=\"col-md-2\"><input type='range' value='0' max='1023' min='0' step='5' id='slider");
+#else
+  addToBuffer("<div class=\"col-md-2\"><input type='range' value='0' max='255' min='0' step='5' id='slider");
+#endif
+  addToBuffer(sliders[current_sliders_index]);
+  addToBuffer("'></div>");
+  addToBuffer("</div>");
+  current_sliders_index++;
+}
+
+void add_next_variable_label() {
+  addToBuffer("<div class=\"row\">");
+  addToBuffer("<div class='col-md-4 indicator'>");
+  addToBuffer(var_labels_text[current_var_labels_index]);
+  addToBuffer(": </div>");
+  addToBuffer("<div class='col-md-4 indicator' id='");
+  addToBuffer(var_labels_names[current_var_labels_index]);
+  addToBuffer("'></div>");
+  addToBuffer("</div>");
+  current_var_labels_index++;
+}
+
+void add_next_label() {
+  addToBuffer("<div class=\"row\">");
+  addToBuffer("<div class='col-md-10 indicator'>");
+  addToBuffer(labels_text[current_labels_index]);
+  addToBuffer("</div>");
+  addToBuffer("</div>");
+  current_labels_index++;
+}
+
+void reset_current_indices() {
+  current_buttons_index = 0;
+  current_function_buttons_index = 0;
+  current_func_with_input_buttons_index = 0;
+  current_sliders_index = 0;
+  current_var_labels_index = 0;
+  current_labels_index = 0;
 }
 
 // Handle connection
@@ -147,6 +255,7 @@ virtual void root_answer() {
     addToBuffer("</head><body>");
     addToBuffer("<div class=\"container\">");
 
+
     // Title
     if (ui_title.length() != 0) {
       addToBuffer("<h1>");
@@ -157,75 +266,29 @@ virtual void root_answer() {
       addToBuffer("<h1>Interface</h1>");
     }
 
-    // Buttons UI
-    for (int i = 0; i < buttons_index; i++) {
-      addToBuffer("<div class=\"row\">");
-      addToBuffer("<div class=\"col-md-2\"><button class=\"btn btn-block btn-lg btn-primary\" id='btn_on");
-      addToBuffer(buttons[i]);
-      addToBuffer("'>On</button></div>");
-      addToBuffer("<div class=\"col-md-2\"><button class=\"btn btn-block btn-lg btn-danger\" id='btn_off");
-      addToBuffer(buttons[i]);
-      addToBuffer("'>Off</button></div>");
-      addToBuffer("</div>");
-    }
-
-    // Function Buttons UI
-    for (int i = 0; i < function_buttons_index; i++) {
-      addToBuffer("<div class=\"row\">");
-      addToBuffer("<div class=\"col-md-2\"><button class=\"btn btn-block btn-lg btn-primary\" id='func_btn");
-      addToBuffer(i);
-      addToBuffer("'>");
-      addToBuffer(function_buttons[i].description);
-      addToBuffer("</button></div>");
-      addToBuffer("</div>");
-    }
-
-    // Function With Input Buttons UI
-    for (int i = 0; i < func_with_input_buttons_index; i++) {
-      addToBuffer("<div class=\"row\">");
-      addToBuffer("<div class=\"col-md-2\"><input type='text' id='func_with_input_text");
-      addToBuffer(i);
-      addToBuffer("'/></div>");
-      addToBuffer("<div class=\"col-md-2\"><button class=\"btn btn-block btn-lg btn-primary\" id='func_with_input_btn");
-      addToBuffer(i);
-      addToBuffer("'>");
-      addToBuffer(func_with_input_buttons[i].description);
-      addToBuffer("</button></div>");
-      addToBuffer("</div>");
-    }
-
-    // // Sliders UI
-    for (int i = 0; i < sliders_index; i++) {
-      addToBuffer("<div class=\"row\">");
-      #if defined(ESP8266)
-      addToBuffer("<div class=\"col-md-2\"><input type='range' value='0' max='1023' min='0' step='5' id='slider");
-      #else
-      addToBuffer("<div class=\"col-md-2\"><input type='range' value='0' max='255' min='0' step='5' id='slider");
-      #endif
-      addToBuffer(sliders[i]);
-      addToBuffer("'></div>");
-      addToBuffer("</div>");
-    }
-    
-    // Variable Labels UI
-    for (int j = 0; j < var_labels_index; j++) {
-      addToBuffer("<div class=\"row\">");
-      addToBuffer("<div class='col-md-4 indicator'>");
-      addToBuffer(var_labels_text[j]);
-      addToBuffer(": </div>");
-      addToBuffer("<div class='col-md-4 indicator' id='");
-      addToBuffer(var_labels_names[j]);
-      addToBuffer("'></div>");
-      addToBuffer("</div>");
-    }
-
-    // Labels UI
-    for (int j = 0; j < labels_index; j++) {
-      addToBuffer("<div class=\"row\">");
-      addToBuffer("<div class='col-md-10 indicator'>");
-      addToBuffer(labels_text[j]);
-      addToBuffer("</div>");
-      addToBuffer("</div>");
+    reset_current_indices();
+    // Add all UI elements in order they were added
+    for (int i = 0; i < ui_order_index; i++) {
+      switch (ui_order_list[i]) {
+	case TYPE_BUTTON:
+	  add_next_button();
+	  break;
+	case TYPE_FUNCTION_BUTTON:
+	  add_next_function_button();
+	  break;
+	case TYPE_FUNCTION_WITH_INPUT_BUTTON:
+	  add_next_function_with_input_button();
+	  break;
+	case TYPE_SLIDER:
+	  add_next_slider();
+	  break;
+	case TYPE_VARIABLE_LABEL:
+	  add_next_variable_label();
+	  break;
+	case TYPE_LABEL:
+	  add_next_label();
+	  break;
+      }
     }
 
     addToBuffer("</div>");
@@ -302,28 +365,36 @@ private:
   // Buttons array
   int buttons[10];
   int buttons_index;
+  int current_buttons_index;
 
   // Function Buttons array
   function_button_t function_buttons[10];
   int function_buttons_index;
+  int current_function_buttons_index;
 
   // Function With Input Buttons array
   function_button_t func_with_input_buttons[10];
   int func_with_input_buttons_index;
+  int current_func_with_input_buttons_index;
 
   // Buttons array
   int sliders[10];
   int sliders_index;
+  int current_sliders_index;
   
   // Variable Labels array
   uint8_t var_labels_index;
+  uint8_t current_var_labels_index;
   char * var_labels_names[10];
   char * var_labels_text[10];
   
   // Labels array
   uint8_t labels_index;
+  uint8_t current_labels_index;
   char * labels_text[10];
 
+  ui_type_t ui_order_list[30];
+  int ui_order_index;
 };
 
 #endif
