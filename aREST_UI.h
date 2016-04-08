@@ -149,9 +149,10 @@ void variable_label_add(char *variable_name, char *label_text){
 }
 
 // Create label
-void label(char *label_text){
+void label(char *label_text, bool small_text=false){
 
   labels_text[labels_index] = label_text;
+  labels_text_should_be_small[labels_index] = small_text;
   labels_index++;
 
   // Set in the ui_order_list
@@ -223,7 +224,14 @@ void add_next_variable_label() {
 
 void add_next_label() {
   addToBuffer("<div class=\"row\">");
-  addToBuffer("<div class='col-md-10 indicator'>");
+  if (labels_text_should_be_small[current_labels_index])
+  {
+      addToBuffer("<div class='col-md-10 smalltext'>");
+  }
+  else
+  {
+      addToBuffer("<div class='col-md-10 indicator'>");
+  }
   addToBuffer(labels_text[current_labels_index]);
   addToBuffer("</div>");
   addToBuffer("</div>");
@@ -250,7 +258,7 @@ virtual void root_answer() {
     addToBuffer("src=\"http://code.jquery.com/jquery-2.1.3.min.js\">");
     addToBuffer("</script>");
     addToBuffer("<script type='text/javascript' src='http://cdn.rawgit.com/Foliotek/AjaxQ/master/ajaxq.js'></script>");
-    addToBuffer("<style>.row {margin-top: 30px;} .indicator {font-size: 30px; vertical-align: middle;}</style>");
+    addToBuffer("<style>.row {margin-top: 30px;} .indicator {font-size: 30px; vertical-align: middle;} .smalltext {font-size: 15px; vertical-align: middle;}</style>");
     addToBuffer("<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">");
     addToBuffer("</head><body>");
     addToBuffer("<div class=\"container\">");
@@ -392,6 +400,7 @@ private:
   uint8_t labels_index;
   uint8_t current_labels_index;
   char * labels_text[10];
+  bool labels_text_should_be_small[10];
 
   ui_type_t ui_order_list[30];
   int ui_order_index;
