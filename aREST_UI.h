@@ -223,13 +223,14 @@ void add_next_variable_label() {
 }
 
 void add_next_label() {
-  addToBuffer("<div class=\"row\">");
   if (labels_text_should_be_small[current_labels_index])
   {
+      addToBuffer("<div>");
       addToBuffer("<div class='col-md-10 smalltext'>");
   }
   else
   {
+      addToBuffer("<div class=\"row\">");
       addToBuffer("<div class='col-md-10 indicator'>");
   }
   addToBuffer(labels_text[current_labels_index]);
@@ -258,7 +259,7 @@ virtual void root_answer() {
     addToBuffer("src=\"http://code.jquery.com/jquery-2.1.3.min.js\">");
     addToBuffer("</script>");
     addToBuffer("<script type='text/javascript' src='http://cdn.rawgit.com/Foliotek/AjaxQ/master/ajaxq.js'></script>");
-    addToBuffer("<style>.row {margin-top: 30px;} .indicator {font-size: 30px; vertical-align: middle;} .smalltext {font-size: 15px; vertical-align: middle;}</style>");
+    addToBuffer("<style>.row {margin-top: 30px;} .indicator {font-size: 30px; vertical-align: middle;} .smalltext {font-size: 15px; margin-top: 5px; margin-bottom: 15px;}</style>");
     addToBuffer("<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">");
     addToBuffer("</head><body>");
     addToBuffer("<div class=\"container\">");
