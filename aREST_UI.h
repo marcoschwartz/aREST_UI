@@ -1,11 +1,12 @@
-/* 
+/*
   aREST UI for Arduino & the ESP8266
   See the README file for more details.
- 
-  Written in 2015 by Marco Schwartz under a GPL license. 
-  Version 1.0.1
+
+  Written in 2015 by Marco Schwartz under a GPL license.
+  Version 1.0.0
   Changelog:
-  
+
+  Version 1.1.0: Added support for functions
   Version 1.0.1: Initial release with buttons only
 */
 
@@ -45,6 +46,17 @@ void button(int pin){
 
 }
 
+// Create function control
+void callFunction(char * functionName, char * type){
+
+  // Set in callFunction array
+  callFunctionNames[functions_index] = functionName;
+  callFunctionTypes[functions_index] = type;
+  functions_index++;
+
+}
+
+// Create slider
 void slider(int pin) {
 
   // Set pin as output
@@ -66,7 +78,7 @@ void label(char * label_name){
 
 // Handle connection
 virtual void root_answer() {
-        
+
     // Answer
     addToBuffer("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n");
     addToBuffer("<html><head>");
@@ -102,7 +114,23 @@ virtual void root_answer() {
       addToBuffer("</div>");
     }
 
-    // // Sliders UI
+    // Function calls UI
+    for (int i = 0; i < functions_index; i++) {
+
+      if (callFunctionTypes[i] == "push") {
+
+        addToBuffer("<div class=\"row\">");
+        addToBuffer("<div class=\"col-md-3\"><button class=\"btn btn-block btn-lg btn-primary\" id='fn_push_");
+        addToBuffer(callFunctionNames[i]);
+        addToBuffer("'>");
+        addToBuffer(callFunctionNames[i]);
+        addToBuffer("</button></div>");
+        addToBuffer("</div>");
+
+      }
+    }
+
+    // Sliders UI
     for (int i = 0; i < sliders_index; i++) {
       addToBuffer("<div class=\"row\">");
       #if defined(ESP8266)
@@ -114,7 +142,7 @@ virtual void root_answer() {
       addToBuffer("'></div>");
       addToBuffer("</div>");
     }
-    
+
     // Labels UI
     for (int j = 0; j < int_labels_index; j++) {
       addToBuffer("<div class=\"row\">");
@@ -142,7 +170,16 @@ virtual void root_answer() {
       addToBuffer(buttons[i]);
       addToBuffer("').click(function() {$.getq('queue','/digital/");
       addToBuffer(buttons[i]);
-      addToBuffer("/0');});");    
+      addToBuffer("/0');});");
+    }
+
+    // Functions JavaScript
+    for (int i = 0; i < functions_index; i++) {
+      addToBuffer("$('#fn_push_");
+      addToBuffer(callFunctionNames[i]);
+      addToBuffer("').click(function() {$.getq('queue','/");
+      addToBuffer(callFunctionNames[i]);
+      addToBuffer("');});");
     }
 
     // Sliders JavaScript
@@ -153,7 +190,7 @@ virtual void root_answer() {
       addToBuffer(sliders[i]);
       addToBuffer("').val(); $.getq('queue','/analog/");
       addToBuffer(sliders[i]);
-      addToBuffer("/' + val); });");      
+      addToBuffer("/' + val); });");
     }
 
     // Labels JavaScript
@@ -164,7 +201,7 @@ virtual void root_answer() {
       addToBuffer(int_labels_names[j]);
       addToBuffer("').html(data.");
       addToBuffer(int_labels_names[j]);
-      addToBuffer("); });"); 
+      addToBuffer("); });");
     }
 
     addToBuffer("});</script>");
@@ -182,10 +219,15 @@ private:
   int buttons[10];
   int buttons_index;
 
+  // Functions array
+  char * callFunctionNames[10];
+  char * callFunctionTypes[10];
+  int functions_index;
+
   // Buttons array
   int sliders[10];
   int sliders_index;
-  
+
   // Indicators array
   uint8_t int_labels_index;
   int * int_labels_variables[10];
