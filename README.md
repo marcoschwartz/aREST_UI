@@ -8,6 +8,8 @@ aREST UI is an embedded UI for the aREST framework. Currently works with the Ard
 
 It also works with the ESP8266 WiFi chip.
 
+If you want to know more about aREST, go over to [http://arest.io/](http://arest.io/).
+
 ## Contents
 
 - aREST_UI.h: the library file.
@@ -59,6 +61,12 @@ To install the library, simply clone this repository in the /libraries folder of
 You can simply create an instance of aREST UI with the following command:
 
 `aREST_UI ui = aREST_UI();`
+
+### Title
+
+If you don't want to run with the default title, set your own for the UI.
+
+`ui.title("Your title");`
 
 ### Button
 
