@@ -4,7 +4,7 @@ Version 1.1.0
 
 ## Overview
 
-aREST UI is an embedded UI for the aREST framework. Currently works with the Arduino Mega & Arduino Due with the CC3000 WiFi chip, the WiFi shield, and the Ethernet shield. It works as well with the WildFire v3 board.
+aREST UI is an embedded UI for the aREST framework. Currently works with the Arduino Mega & Arduino Due with the CC3000 WiFi chip, the WiFi shield, and the Ethernet shield. It works as well with the Arduino Zero with the WiFi 101 shield, and with the Arduino MKR1000 board.
 
 It also works with the ESP8266 WiFi chip.
 
