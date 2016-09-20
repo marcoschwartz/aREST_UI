@@ -1,6 +1,6 @@
 # aREST_UI [![Build Status](https://travis-ci.org/marcoschwartz/aREST_UI.svg)](https://travis-ci.org/marcoschwartz/aREST_UI)
 
-Version 1.1.0
+Version 1.1.1
 
 ## Overview
 

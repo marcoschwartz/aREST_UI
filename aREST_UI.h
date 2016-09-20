@@ -3,9 +3,11 @@
   See the README file for more details.
 
   Written in 2015 by Marco Schwartz under a GPL license.
-  Version 1.0.0
+  Version 1.1.1
+
   Changelog:
 
+  Version 1.1.1: Fixed bug with NodeMCU boards
   Version 1.1.0: Added support for functions
   Version 1.0.1: Initial release with buttons only
 */
@@ -38,7 +40,11 @@ void title(String the_title) {
 void button(int pin){
 
   // Set pin as output
-  pinMode(pin,OUTPUT);
+  #if defined(ARDUINO_ESP8266_NODEMCU) || defined(ARDUINO_ESP8266_WEMOS_D1MINI)
+    pinMode(esp_12_pin_map(pin), OUTPUT);
+  #else
+    pinMode(pin, OUTPUT);
+  #endif
 
   // Set in button array
   buttons[buttons_index] = pin;
@@ -60,7 +66,11 @@ void callFunction(char * functionName, char * type){
 void slider(int pin) {
 
   // Set pin as output
-  pinMode(pin,OUTPUT);
+  #if defined(ARDUINO_ESP8266_NODEMCU) || defined(ARDUINO_ESP8266_WEMOS_D1MINI)
+    pinMode(esp_12_pin_map(pin), OUTPUT);
+  #else
+    pinMode(pin, OUTPUT);
+  #endif
 
   // Set in button array
   sliders[sliders_index] = pin;
