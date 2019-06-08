@@ -37,7 +37,7 @@ void title(String the_title) {
 }
 
 // Create button
-void button(int pin){
+void button(int pin, char * btn_name){
 
   // Set pin as output
   #if defined(ARDUINO_ESP8266_NODEMCU) || defined(ARDUINO_ESP8266_WEMOS_D1MINI)
@@ -48,6 +48,7 @@ void button(int pin){
 
   // Set in button array
   buttons[buttons_index] = pin;
+  int_btn_names[buttons_index] = btn_name;
   buttons_index++;
 
 }
@@ -114,6 +115,9 @@ virtual void root_answer() {
 
     // Buttons UI
     for (int i = 0; i < buttons_index; i++) {
+	  addToBuffer("<h2>");
+      addToBuffer(int_btn_names[i]);
+      addToBuffer("</h2>");
       addToBuffer("<div class=\"row\">");
       addToBuffer("<div class=\"col-md-2\"><button class=\"btn btn-block btn-lg btn-primary\" id='btn_on");
       addToBuffer(buttons[i]);
@@ -242,6 +246,7 @@ private:
   uint8_t int_labels_index;
   int * int_labels_variables[10];
   char * int_labels_names[10];
+  char * int_btn_names[10];
 
 };
 
